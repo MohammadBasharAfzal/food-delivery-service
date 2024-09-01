@@ -1,29 +1,53 @@
-const connection = require('../config/db');
+const pool = require('../config/db');
 
-const Driver = {
-  getAllDrivers(callback) {
-    connection.query('SELECT * FROM drivers', callback);
-  },
-
-  getDriverById(driverId, callback) {
-    connection.query('SELECT * FROM drivers WHERE driver_id = ?', [driverId], callback);
-  },
-
-  createDriver(driverData, callback) {
-    const { name, phone, email, vehicle_number, availability_status } = driverData;
-    connection.query('INSERT INTO drivers (name, phone, email, vehicle_number, availability_status) VALUES (?, ?, ?, ?, ?)', 
-      [name, phone, email, vehicle_number, availability_status], callback);
-  },
-
-  updateDriver(driverId, driverData, callback) {
-    const { name, phone, email, vehicle_number, availability_status } = driverData;
-    connection.query('UPDATE drivers SET name = ?, phone = ?, email = ?, vehicle_number = ?, availability_status = ? WHERE driver_id = ?', 
-      [name, phone, email, vehicle_number, availability_status, driverId], callback);
-  },
-
-  deleteDriver(driverId, callback) {
-    connection.query('DELETE FROM drivers WHERE driver_id = ?', [driverId], callback);
-  }
+// Create a new driver
+exports.createDriver = ({ name, vehicle, contact }) => {
+  return new Promise((resolve, reject) => {
+    pool.query('INSERT INTO drivers (name, vehicle, contact) VALUES (?, ?, ?)', 
+      [name, vehicle, contact], (error, results) => {
+        if (error) return reject(error);
+        resolve({ id: results.insertId, name, vehicle, contact });
+      });
+  });
 };
 
-module.exports = Driver;
+// Get all drivers
+exports.getAllDrivers = () => {
+  return new Promise((resolve, reject) => {
+    pool.query('SELECT * FROM drivers', (error, results) => {
+      if (error) return reject(error);
+      resolve(results);
+    });
+  });
+};
+
+// Get a driver by ID
+exports.getDriverById = (id) => {
+  return new Promise((resolve, reject) => {
+    pool.query('SELECT * FROM drivers WHERE driver_id = ?', [id], (error, results) => {
+      if (error) return reject(error);
+      resolve(results[0]);
+    });
+  });
+};
+
+// Update a driver
+exports.updateDriver = (id, { name, vehicle, contact }) => {
+  return new Promise((resolve, reject) => {
+    pool.query('UPDATE drivers SET name = ?, vehicle = ?, contact = ? WHERE driver_id = ?', 
+      [name, vehicle, contact, id], (error, results) => {
+        if (error) return reject(error);
+        resolve(results);
+      });
+  });
+};
+
+// Delete a driver
+exports.deleteDriver = (id) => {
+  return new Promise((resolve, reject) => {
+    pool.query('DELETE FROM drivers WHERE driver_id = ?', [id], (error, results) => {
+      if (error) return reject(error);
+      resolve(results);
+    });
+  });
+};
