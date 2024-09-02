@@ -9,7 +9,6 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import { CartProvider } from './context/CartContext';
 
-// Create a context for authentication
 export const AuthContext = createContext();
 
 const App = () => {

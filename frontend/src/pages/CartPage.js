@@ -1,16 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { useCart } from '../context/CartContext'; // Import the CartContext hook
+// src/pages/CartPage.js
+import React, { useEffect } from 'react';
+import { useCart } from '../context/CartContext';
 
 const CartPage = () => {
-  const { cartItems } = useCart(); // Get cart items from CartContext
+  const { cartItems } = useCart();
+
+  useEffect(() => {
+    console.log('CartPage - cartItems:', cartItems);
+  }, [cartItems]);
+
+  const safeCartItems = Array.isArray(cartItems) ? cartItems : [];
 
   return (
     <div>
       <h1>Cart</h1>
       <ul>
-        {cartItems.length > 0 ? (
-          cartItems.map((item, index) => (
-            <li key={index}>
+        {safeCartItems.length > 0 ? (
+          safeCartItems.map((item) => (
+            <li key={item.menu_id}>
               <h2>{item.name}</h2>
               <p>{item.description}</p>
               <p>Price: ${item.price}</p>

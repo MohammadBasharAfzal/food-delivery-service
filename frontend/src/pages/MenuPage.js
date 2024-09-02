@@ -1,13 +1,13 @@
+// src/pages/MenuPage.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { addToCart } from '../services/cartService'; // Import the cart service
+import { useCart } from '../context/CartContext';
 
-// Fetch menu items using Axios
 const fetchMenuItems = async () => {
   try {
     const response = await axios.get('http://localhost:5000/api/menu');
-    console.log('API Response:', response.data); // Log the API response
-    return response;
+    console.log('API Response:', response.data);
+    return response.data.menuItems;
   } catch (error) {
     console.error('Error fetching menu items:', error);
     throw error;
@@ -16,14 +16,14 @@ const fetchMenuItems = async () => {
 
 const MenuPage = () => {
   const [menuItems, setMenuItems] = useState([]);
+  const { addToCart } = useCart();
 
   useEffect(() => {
-    // Fetch menu items from the backend
     const getMenuItems = async () => {
       try {
-        const response = await fetchMenuItems();
-        console.log('Fetched menu items:', response.data.menuItems); // Log the fetched items
-        setMenuItems(response.data.menuItems); // Set state with the correct data
+        const items = await fetchMenuItems();
+        console.log('Fetched menu items:', items);
+        setMenuItems(items);
       } catch (error) {
         console.error('Error fetching menu items:', error);
       }
@@ -32,10 +32,9 @@ const MenuPage = () => {
     getMenuItems();
   }, []);
 
-  // Function to add items to the cart
   const handleAddToCart = (item) => {
-    addToCart(item); // Call the cart service function
-    console.log('Added to cart:', item); // Log item added to cart
+    addToCart(item);
+    console.log('Added to cart:', item);
   };
 
   return (
