@@ -1,5 +1,4 @@
-// Path: frontend/src/App.js
-
+// src/App.js
 import React, { createContext, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage';
@@ -8,6 +7,7 @@ import CartPage from './pages/CartPage';
 import OrderTracking from './pages/OrderTracking';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import { CartProvider } from './context/CartContext';
 
 // Create a context for authentication
 export const AuthContext = createContext();
@@ -17,17 +17,19 @@ const App = () => {
 
   return (
     <AuthContext.Provider value={{ user, setUser }}>
-      <Router>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/menu" element={<MenuPage />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/order-tracking" element={<OrderTracking />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          {/* Add other routes as needed */}
-        </Routes>
-      </Router>
+      <CartProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/menu" element={<MenuPage />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/order-tracking" element={<OrderTracking />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            {/* Add other routes as needed */}
+          </Routes>
+        </Router>
+      </CartProvider>
     </AuthContext.Provider>
   );
 };

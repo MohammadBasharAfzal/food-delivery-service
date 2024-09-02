@@ -1,9 +1,6 @@
 const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
+const cors = require('cors'); // Import CORS middleware
 const app = express();
-const server = http.createServer(app);
-const io = socketIo(server); // Initialize Socket.io with the server
 
 // Import routes and middleware
 const authRoutes = require('./routes/authRoutes');
@@ -14,6 +11,9 @@ const orderController = require('./controllers/orderController');
 const driverController = require('./controllers/driverController');
 const errorHandler = require('./middlewares/errorHandler');
 const { validateRestaurant, validateMenuItem, validateOrder, validateDriver } = require('./middlewares/validate');
+
+// Use CORS middleware
+app.use(cors()); // Add this line to enable CORS
 
 app.use(express.json());
 
@@ -50,24 +50,7 @@ app.get('/api/protected', authMiddleware, (req, res) => {
   res.json({ message: 'This is a protected route', user: req.user });
 });
 
-// Real-time functionality with Socket.io
-io.on('connection', (socket) => {
-  console.log('New client connected');
-
-  // Listen for real-time order updates
-  socket.on('orderUpdate', (order) => {
-    console.log('Order update:', order);
-    // Broadcast order update to all clients
-    io.emit('orderUpdate', order);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('Client disconnected');
-  });
-});
-
 // Error handling middleware
 app.use(errorHandler);
 
-// Export the server for starting
-module.exports = { app, server };
+module.exports = app; // Only export the app, not the server
